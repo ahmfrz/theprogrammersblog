@@ -11,6 +11,10 @@ def post_key(group='default'):
     return db.Key.from_path('posts', group)
 
 
+def comment_key(group='default'):
+    return db.Key.from_path('comments', group)
+
+
 # region Queries
 SELECT_ALL_POSTS = "SELECT * FROM PostEntity ORDER BY created_date DESC"
 SELECT_ALL_POSTS_BY = "SELECT * FROM PostEntity WHERE created_by = {0} ORDER BY created_date DESC"
@@ -96,7 +100,7 @@ class PostEntity(db.Model):
 
     # region functions
     def get_all_comments(self):
-        return self.post_comments.order('-created_date')
+        return self.post_comments.order('-created_date').fetch(500)
 
 
 class CommentEntity(db.Model):
@@ -106,7 +110,7 @@ class CommentEntity(db.Model):
 
     # region columns
     comment_by = db.StringProperty()
-    comment_by_id = db.StringProperty()
+    comment_by_id = db.IntegerProperty()
     created_date = db.DateTimeProperty(auto_now_add=True)
     comment = db.TextProperty(required=True)
     post = db.ReferenceProperty(PostEntity, collection_name='post_comments')
@@ -114,10 +118,15 @@ class CommentEntity(db.Model):
     # region class methods
     @classmethod
     def register(cls, post, comment_by, comment_by_id, comment):
-        return cls(post=post,
+        return cls(parent=comment_key(),
+                   post=post,
                    comment_by=comment_by,
                    comment_by_id=comment_by_id,
                    comment=comment)
+
+    @classmethod
+    def by_id(cls, cid):
+        return cls.get_by_id(cid, parent=comment_key())
 
     @ classmethod
     def commit_comment(cls, comment):
