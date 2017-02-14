@@ -28,6 +28,12 @@ app = webapp2.WSGIApplication([
         r'/post/addComment/<:[0-9]+>',
         'page_handlers.PostHandler:add_comment'),
     webapp2.Route(
+        r'/editComment/<:[0-9]+>/<:[0-9]+>',
+        'page_handlers.PostHandler:edit_comment'),
+    webapp2.Route(
+        r'/deleteComment/<:[0-9]+>/<:[0-9]+>',
+        'page_handlers.PostHandler:delete_comment'),
+    webapp2.Route(
         r'/addAbout/<:[0-9]+>',
         'page_handlers.UserInfoHandler:add_about'),
     webapp2.Route(
