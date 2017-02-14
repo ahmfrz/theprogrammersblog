@@ -309,12 +309,33 @@ class PostHandler(common_utilities.BaseHandler):
             if post and comment_content:
                 comment = repo.CommentEntity.register(post=post,
                                                       comment_by=self.user.username,
-                                                      comment_by_id=str(
-                                                          self.user.key().id()),
+                                                      comment_by_id=self.user.key().id(),
                                                       comment=comment_content)
                 repo.CommentEntity.commit_comment(comment)
                 return self.redirect('/{0}/{1}'.format('post',
                                                        post.key().id()))
+
+        self.redirect('/login')
+
+    def edit_comment(self, cid, pid):
+        if self.user:
+            commentEntity = repo.CommentEntity.by_id(int(cid))
+            comment_content = self.request.get('post_comment')
+            if commentEntity and comment_content:
+                commentEntity.comment = comment_content
+                repo.CommentEntity.commit_comment(commentEntity)
+                return self.redirect('/{0}/{1}'.format('post',
+                                                       pid))
+
+        self.redirect('/login')
+
+    def delete_comment(self, cid, pid):
+        if self.user:
+            comment = repo.CommentEntity.by_id(int(cid))
+            if comment:
+                comment.delete()
+                return self.redirect('/{0}/{1}'.format('post',
+                                                       pid))
 
         self.redirect('/login')
 
