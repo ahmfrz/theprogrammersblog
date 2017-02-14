@@ -1,0 +1,33 @@
+{% extends 'base.html' %} {% block content %}
+<div class="page-header">
+    <h1>Login <small>fill up the below form</small></h1>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <form method="post">
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon input-label" id="sizing-addon1">Username</span>
+                <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon1" name="username" value="{{username}}">
+            </div>
+            <div class="input-group input-group-lg top-buffer">
+                <span class="input-group-addon input-label" id="sizing-addon1">Password</span>
+                <input type="password" name="password" class="form-control" placeholder="Password" aria-describedby="sizing-addon1">
+            </div>
+            <div class="error">{{error}}</div>
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-default top-buffer btn-lg">Login</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <div>
+            <h2>About us</h2>
+            <blockquote>
+                <p>A blog for awesome people
+                    <br> Made by awesome people
+                    <br> If you love programming, it's time to share your story</p>
+            </blockquote>
+        </div>
+    </div>
+</div>
+{% endblock %}

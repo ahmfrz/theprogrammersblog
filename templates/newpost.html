@@ -1,0 +1,26 @@
+{% extends 'base.html' %} {% block content %}
+<div class="page-header">
+    <h1>A New POST <small> ** How nice!! **</small></h1>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <form method="post">
+            <div class="form-group">
+                <label for="post_title">Title</label>
+                <input type="text" id="post_title" name="title" class="form-control" placeholder="Title">
+            </div>
+            <div class="form-group">
+                <label for="post_content">Content</label>
+                <textarea class="form-control content-area" id="post_content" rows="15" placeholder="Content" name="content"></textarea>
+            </div>
+            <div class="error">{{error}}</div>
+            <input type="submit" class="btn btn-default">
+            <input type="reset" class="btn btn-default" value="Clear">
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <h3>Preview</h3>
+        <textarea class="form-control" rows="17" placeholder="Upcoming feature - not working yet" disabled></textarea>
+    </div>
+</div>
+{% endblock %}

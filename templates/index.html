@@ -1,0 +1,128 @@
+{% extends 'base.html' %} {% block content %}
+<div class="blog-header">
+    <h1 class="blog-title">The Programmers Blog</h1>
+    <p class="lead blog-description">
+        A platform where programmers share their stories
+    </p>
+</div>
+<div class="row">
+    <div class="blog-main col-sm-8">
+        {% for postIndex in range(posts_len) %}
+        <div class="blog-post">
+            <h2 class="blog-post-title">
+                    <a href={{"/{0}/{1}".format("post", posts[postIndex].key().id())}}>{{posts[postIndex].title}}</a>
+                </h2>
+            <p class="blog-post-meta">{{posts[postIndex].modified_date.strftime("%b %d, %Y %H:%M:%S")}} by
+                <a href={{ "/{0}/{1}".format(posts[postIndex].author, posts[postIndex].created_by)}}>{{posts[postIndex].author}}</a>
+            </p>
+            {% if posts[postIndex].author == user.username %}
+            <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "deletepost", posts[postIndex].key().id())}}>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                    Edit
+                </button>
+                <input type="submit" value="Delete" class="btn btn-default">
+            </form>
+            <!-- Modal -->
+            <form method="post" action={{ "/{0}/{1}".format( "editpost", posts[postIndex].key().id())}}>
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <input type="text" class="form-control" id="myModalLabel" name="post_title" value={{posts[postIndex].title}}>
+                            </div>
+                            <div class="modal-body">
+                                <textarea class="form-control content-area" name="post_content" rows=15>{{posts[postIndex].content.replace('<br>', '\n')}}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="Save changes">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {% endif %}
+            <hr>
+            <div class="text-justify">
+                {{posts[postIndex].content | safe}}
+            </div>
+            <br>
+            <p>
+                {% if posts[postIndex].author != user.username %}
+                <form method="post" action={{ "/{0}/{1}".format( "likepost", posts[postIndex].key().id())}}>
+                    <label class="like-counter">{{posts[postIndex].likes}}</label>
+                    <button type="submit" formaction={{ "/{0}/{1}".format( "likepost", posts[postIndex].key().id())}} formmethod="post" class="btn btn-default">Like</button>
+                    <button type="submit" formaction={{ "/{0}/{1}".format( "unlikepost", posts[postIndex].key().id())}} formmethod="post" class="btn btn-default">Unlike</button>
+                </form>
+                <div class="error">{{likes_error}}</div>
+                {% else %}
+                <label class="like-counter">{{posts[postIndex].likes}}</label>&nbsp;<b>Likes</b> {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+        <form class="inline-form">
+            {% for page in range(pages) %}
+            <input class="btn btn-default" type="submit" name="page" value={{page + 1}}> {% endfor %}
+        </form>
+    </div>
+    <div class="col-md-3 col-md-offset-1 blog-sidebar">
+        {% if user %}
+        <div class="sidebar-module sidebar-module-inset">
+            <h4>About</h4> {% if user.about %}
+            <p>{{user.about}}</p>
+            {% else %}
+            <p class="no-about">Tell us something about your background</p>
+            {% endif %}
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#aboutModal">
+                Edit
+            </button>
+            <!-- Modal -->
+            <form method="post" action={{ "/{0}/{1}".format( "addAbout", user.key().id())}}>
+                <div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                                </button>
+                                <h2>About Me</h2>
+                            </div>
+                            <div class="modal-body">
+                                <textarea class="form-control content-area" name="about" rows=10></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="Save changes">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="sidebar-module">
+            <h4>All posts</h4>
+            <ol class="list-unstyled">
+                {% for p in user_posts %}
+                <li><a href={{ "/{0}/{1}".format( 'post', p.key().id())}}>{{p.title}}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+        {% else %}
+        <div class="sidebar-module sidebar-module-inset">
+            <h4>Fun fact</h4>
+            <p>Programmers are awesome!! True story!!</p>
+        </div>
+        {% endif %}
+        <div class="sidebar-module">
+            <h4>Elsewhere</h4>
+            <ol class="list-unstyled">
+                <li><a href="https://github.com/ahmfrz" target="_blank" lang="en">GitHub</a></li>
+                <li><a href="https://plus.google.com/101730400204789704600" target="_blank" lang="en">Google+</a></li>
+                <li><a href="https://in.linkedin.com/in/ahmed-faraz-ansari-455ba211a" target="_blank" lang="en">LinkedIn</a></li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

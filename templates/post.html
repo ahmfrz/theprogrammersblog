@@ -1,0 +1,75 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row">
+    <div class="blog-main col-sm-10">
+        <div class="blog-post">
+            <h2 class="page-header">{{post.title}}</h2>
+            <p class="blog-post-meta">{{post.created_date.strftime("%b %d, %Y %H:%M:%S")}} by
+                <a href={{ "/{0}/{1}".format(post.author, post.created_by)}}>{{post.author}}</a>
+            </p>
+            {% if post.author == user.username %}
+            <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "deletepost", post.key().id())}}>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                    Edit
+                </button>
+                <input type="submit" value="Delete" class="btn btn-default">
+            </form>
+            <!-- Modal -->
+            <form method="post" action={{ "/{0}/{1}".format( "editpost", post.key().id())}}>
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <input type="text" class="form-control" id="myModalLabel" name="post_title" value={{post.title}}>
+                            </div>
+                            <div class="modal-body">
+                                <textarea class="form-control content-area" name="post_content" rows=15>{{post.content.replace('<br>', '\n')}}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <input type="submit" class="btn btn-primary" value="Save changes">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {% endif %}
+            <hr>
+            <div class="text-justify">
+                {{post.content | safe}}
+            </div>
+            <br>
+            <p>
+                {% if post.author != user.username %}
+                <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "likepost", post.key().id())}}>
+                    <label class="like-counter">{{post.likes}}</label>
+                    <input class="btn btn-default" type="submit" value="Like">
+                </form>
+                {% else %}
+                <label class="like-counter">{{post.likes}}</label>&nbsp;<b>Likes</b> {% endif %}
+            </p>
+        </div>
+        <div>
+            <form method="post" action={{ "{0}/{1}".format( 'addComment', post.key().id())}}>
+                <div class="form-group">
+                    <label for="commentbox">Comment</label>
+                    <textarea id="commentbox" class="form-control content-area" name="comment" rows="5"></textarea>
+                </div>
+                <input class="btn btn-default" type="submit">
+            </form>
+        </div>
+        <br>
+        <div class="comments_wrapper">
+            {% for p in post_comments %}
+            <div class="comment-container">
+                <div>
+                    <strong>{{p.comment_by}}</strong>&nbsp;<small>{{p.created_date.strftime("%b %d, %Y")}}</small>:
+                </div>
+                <div class="comment">{{p.comment}}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

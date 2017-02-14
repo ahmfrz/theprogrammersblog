@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% block content %}
+<div class="page-header">
+    <h1>Sign up <small>fill up the below form</small></h1>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <form method="post">
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon input-label" id="user_field">Username</span>
+                <input type="text" class="form-control" placeholder="Username" aria-describedby="user_field" name="username" value="{{username}}">
+            </div>
+            <div class="error">{{error_username}}</div>
+            <div class="input-group input-group-lg top-buffer">
+                <span class="input-group-addon input-label" id="pw_field">Password</span>
+                <input type="password" name="password" class="form-control" placeholder="Password" aria-describedby="pw_field">
+            </div>
+            <div class="error">{{error_password}}</div>
+            <div class="input-group input-group-lg top-buffer">
+                <span class="input-group-addon input-label" id="verify_field">Verify</span>
+                <input type="password" name="verify" class="form-control" placeholder="Re-enter password" aria-describedby="verify_field">
+            </div>
+            <div class="error">{{error_verify}}</div>
+            <div class="input-group input-group-lg top-buffer">
+                <span class="input-group-addon input-label" id="email_field">Email</span>
+                <input type="email" name="email" class="form-control" placeholder="Email" aria-describedby="email_field" value="{{email}}">
+            </div>
+            <div class="error">{{error_email}}</div>
+            <button type="submit" class="btn btn-default top-buffer btn-lg">Submit</button>
+            <button type="reset" class="btn btn-default top-buffer btn-lg">Reset</button>
+        </form>
+    </div>
+    <div class="col-sm-6">
+        <h2>About us</h2>
+        <blockquote>
+            <p>
+                A blog for awesome people
+                <br> Made by awesome people
+                <br> If you love programming, it's time to share your story
+            </p>
+        </blockquote>
+    </div>
+</div>
+{% endblock %}
