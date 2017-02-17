@@ -56,8 +56,9 @@
                     <button type="submit" formaction={{ "/{0}/{1}".format( "likepost", posts[postIndex].key().id())}} formmethod="post" class="btn btn-default">Like</button>
                     <button type="submit" formaction={{ "/{0}/{1}".format( "unlikepost", posts[postIndex].key().id())}} formmethod="post" class="btn btn-default">Unlike</button>
                 </form>
+                {% if posts[postIndex].key().id() == post_id %}
                 <div class="error">{{likes_error}}</div>
-                {% else %}
+                {% endif %} {% else %}
                 <label class="like-counter">{{posts[postIndex].likes}}</label>&nbsp;<b>Likes</b> {% endif %}
             </p>
         </div>
@@ -90,7 +91,7 @@
                                 <h2>About Me</h2>
                             </div>
                             <div class="modal-body">
-                                <textarea class="form-control content-area" name="about" rows=10></textarea>
+                                <textarea class="form-control content-area" name="about" rows=10>{{user.about}}</textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

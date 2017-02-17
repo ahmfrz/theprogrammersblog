@@ -1,7 +1,21 @@
+#!/usr/bin/env python
+
+"""This module creates a webapp2 application and defines all routes with their
+handlers"""
+
 import webapp2
 import page_handlers
 
-app = webapp2.WSGIApplication([
+__author__ = "Ahmed Faraz Ansari"
+__copyright__ = "Copyright 2017 (c) ahmfrz"
+
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ahmed Faraz Ansari"
+__email__ = "af.ahmfrz@gmail.com"
+__status__ = "Production"
+
+BLOG = webapp2.WSGIApplication([
     ('/', page_handlers.IndexHandler),
     ('/register', 'page_handlers.RegisterHandler'),
     ('/login', 'page_handlers.LoginHandler'),
@@ -9,6 +23,9 @@ app = webapp2.WSGIApplication([
     ('/newpost', 'page_handlers.NewPostHandler'),
     ('/post/([0-9]+)', 'page_handlers.PostHandler'),
     ('/about', 'page_handlers.AboutHandler'),
+    webapp2.Route(
+        r'/<:[0-9]+>',
+        'page_handlers.IndexHandler'),
     webapp2.Route(
         r'/welcome',
         'page_handlers.UserInfoHandler:welcome'),
@@ -39,5 +56,4 @@ app = webapp2.WSGIApplication([
     webapp2.Route(
         r'/<:[a-zA-Z0-9]+>/<:[0-9]+>',
         'page_handlers.UserInfoHandler:about_user')
-],
-    debug=False)
+], debug=False)

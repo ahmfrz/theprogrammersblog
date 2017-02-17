@@ -1,6 +1,18 @@
+"""This module defines page handlers for multiuser blog"""
+
 import re
 import common_utilities
+from common_utilities import SecurityProvider
 import repo
+
+__author__ = "Ahmed Faraz Ansari"
+__copyright__ = "Copyright 2017 (c) ahmfrz"
+
+__license__ = "MIT"
+__version__ = "1.0.0"
+__maintainer__ = "Ahmed Faraz Ansari"
+__email__ = "af.ahmfrz@gmail.com"
+__status__ = "Production"
 
 # region Page handlers
 
@@ -14,12 +26,17 @@ class IndexHandler(common_utilities.BaseHandler):
     per_page = 5
 
     # region Handler methods
-    def get(self):
+    def get(self, *args):
+        """This method gets the index page
+
+        args:
+            The post id in case there is any error
+        """
         # Get all posts
         all_posts = repo.PostEntity.execute_query(repo.SELECT_ALL_POSTS)
 
         # Get all posts by logged in user
-        user_posts = self.user and all_posts and self.get_all_posts(
+        user_posts = self.user and all_posts and IndexHandler.get_all_posts(
             self.user.key().id())
         if not user_posts:
             user_posts = []
@@ -28,16 +45,34 @@ class IndexHandler(common_utilities.BaseHandler):
         if all_posts:
             result = self.make_pages(all_posts)
         else:
+            # If there are no posts, render with min values
             result = [[], 0, 1]
+
+        pid = 0
+        error = ""
+        if len(args) == 1:
+            pid = args[0]
+            error = "You can only Like/Unlike once"
 
         self.render('index.html',
                     posts=result[0],
                     posts_len=result[1],
                     pages=result[2],
                     user_posts=user_posts,
-                    likes_error=PostHandler.likes_error())
+                    post_id=int(pid),
+                    likes_error=error)
 
     def make_pages(self, all_posts):
+        """This method provides pagination for index page
+
+        Args:
+            all_posts: all posts in the datastore
+
+        Returns:
+            tuple[0]: Posts
+            tuple[1]: Number of posts
+            tuple[2]: Number of pages
+        """
         page = self.request.get('page')
 
         # In case page is not specified, set it to 1
@@ -71,23 +106,55 @@ class RegisterHandler(common_utilities.BaseHandler):
     EMAIL_RE = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
 
     # region functions
-    def valid_username(self, username):
+    @classmethod
+    def valid_username(cls, username):
+        """This method validates given username with regex
+
+        Args:
+            username: The username to match
+
+        Returns:
+            Success: True
+            Failure: None
+        """
         return username and RegisterHandler.USER_RE.match(username)
 
-    def valid_password(self, password):
+    @classmethod
+    def valid_password(cls, password):
+        """This method validates given password with regex
+
+        Args:
+            password: The password to match
+
+        Returns:
+            Success: True
+            Failure: None
+        """
         return password and RegisterHandler.PASS_RE.match(password)
 
-    def valid_email(self, email):
+    @classmethod
+    def valid_email(cls, email):
+        """This method validates given email with regex
+
+         Args:
+            email: The email to match
+
+        Returns:
+            Success: True
+            Failure: None
+        """
         return not email or RegisterHandler.EMAIL_RE.match(email)
 
     # region Handler methods
     def get(self):
+        """This method gets the register page"""
         if not self.user:
             self.render('register.html')
         else:
             self.redirect('/')
 
     def post(self):
+        """This method posts to the register page"""
         username = self.request.get('username')
         password = self.request.get('password')
         verify = self.request.get('verify')
@@ -97,18 +164,18 @@ class RegisterHandler(common_utilities.BaseHandler):
                       email=email)
         have_error = False
 
-        if not self.valid_username(username):
+        if not RegisterHandler.valid_username(username):
             params['error_username'] = "That's not a valid username."
             have_error = True
 
-        if not self.valid_password(password):
+        if not RegisterHandler.valid_password(password):
             params['error_password'] = "That wasn't a valid password."
             have_error = True
         elif password != verify:
             params['error_verify'] = "Your passwords didn't match."
             have_error = True
 
-        if not self.valid_email(email):
+        if not RegisterHandler.valid_email(email):
             params['error_email'] = "That's not a valid email."
             have_error = True
 
@@ -121,9 +188,10 @@ class RegisterHandler(common_utilities.BaseHandler):
                     'register.html', error_username="User already exists")
             else:
                 # Create hash for password for security
-                pw = common_utilities.SecurityProvider.make_secure_password(
+                hashed_password = SecurityProvider.make_secure_password(
                     username, password)
-                new_user = repo.UserEntity.register(username, pw, email)
+                new_user = repo.UserEntity.register(
+                    username, hashed_password, email)
                 repo.UserEntity.commit_user(new_user)
                 self.create_login_cookie(new_user)
                 self.redirect('/welcome')
@@ -135,27 +203,40 @@ class LoginHandler(common_utilities.BaseHandler):
 
     # region Handler methods
     def get(self):
+        """This method gets the login page"""
         if not self.user:
             self.render('login.html')
         else:
             self.redirect('/')
 
     def post(self):
+        """This method posts to the login page"""
         username = self.request.get('username')
         password = self.request.get('password')
-        u = self.login(username, password)
-        if u:
-            self.create_login_cookie(u)
+        user = LoginHandler.login(username, password)
+        if user:
+            self.create_login_cookie(user)
             self.redirect('/welcome')
         else:
             self.render('login.html', error="Invalid username or password")
 
     # region functions
-    def login(self, name, pw):
+    @classmethod
+    def login(cls, name, password):
+        """This function checks given username and password and returns the user if it exists
+
+        Args:
+            name: The user name
+            password: The password
+
+        Returns:
+            Success: The user entity
+            Failure: None
+        """
         user = repo.UserEntity.by_name(name)
 
         # If user exists, check the password with saved hash
-        if user and common_utilities.SecurityProvider.check_secure_password(name, pw, user.password):
+        if user and SecurityProvider.check_secure_password(name, password, user.password):
             return user
 
 
@@ -165,8 +246,8 @@ class LogoutHandler(common_utilities.BaseHandler):
 
     # region Handler methods
     def get(self):
+        """This method logs the user out and redirects to index page"""
         self.logout()
-        self.reset_return_url()
         self.redirect('/')
 
 
@@ -176,18 +257,16 @@ class NewPostHandler(common_utilities.BaseHandler):
 
     # region Handler methods
     def get(self):
+        """This method gets the new post page"""
         # Check if user is logged in
         if self.user:
-            self.reset_return_url()
             self.render('/newpost.html')
         else:
             # If user is not logged in, redirect to login page
-            # And set return-url to show the url that the user
-            # was trying to access
-            self.set_secure_cookie('return-url', '/newpost')
             self.redirect('/login')
 
     def post(self):
+        """This method posts to the new post page"""
         if not self.user:
             return self.redirect('/login')
 
@@ -211,16 +290,13 @@ class PostHandler(common_utilities.BaseHandler):
 
     """This class handles blog post modifications"""
 
-    # region class members
-    _likes_error = " "
-
-    # region class methods
-    @classmethod
-    def likes_error(cls):
-        return cls._likes_error
-
     # region Handler methods
     def get(self, pid):
+        """This method gets the post page of given post id for logged in users
+
+        Args:
+            pid: The post id
+        """
         if not self.user:
             return self.redirect('/login')
 
@@ -234,6 +310,11 @@ class PostHandler(common_utilities.BaseHandler):
         self.redirect('/')
 
     def edit_post(self, pid):
+        """This method edits the post with given post id for logged in users
+
+        Args:
+            pid: The post id
+        """
         if not self.user:
             return self.redirect('/login')
 
@@ -251,6 +332,11 @@ class PostHandler(common_utilities.BaseHandler):
         self.redirect('/{0}/{1}'.format('post', pid))
 
     def delete_post(self, pid):
+        """This method deletes the post with given post id for logged in users
+
+        Args:
+            pid: The post id
+        """
         if not self.user:
             return self.redirect('/login')
 
@@ -262,6 +348,11 @@ class PostHandler(common_utilities.BaseHandler):
             self.error(404)
 
     def like_post(self, pid):
+        """This method adds likes for the post with given post id
+
+        Args:
+            pid: The post id
+        """
         if not self.user:
             return self.redirect('/login')
 
@@ -273,13 +364,17 @@ class PostHandler(common_utilities.BaseHandler):
             post.likes += 1
             repo.UserEntity.commit_user(self.user)
             repo.PostEntity.commit_post(post)
-            PostHandler._likes_error = ""
-        else:
-            PostHandler._likes_error = "You can only like once"
+        elif post:
+            return self.redirect('/{0}'.format(pid))
 
         self.redirect('/')
 
     def unlike_post(self, pid):
+        """This method reduces likes for the post with given post id
+
+        Args:
+            pid: The post id
+        """
         if not self.user:
             return self.redirect('/login')
 
@@ -296,13 +391,17 @@ class PostHandler(common_utilities.BaseHandler):
                 post.likes = 0
             repo.UserEntity.commit_user(self.user)
             repo.PostEntity.commit_post(post)
-            PostHandler._likes_error = ""
-        else:
-            PostHandler._likes_error = "You can only unlike once"
+        elif post:
+            return self.redirect('/{0}'.format(pid))
 
         self.redirect('/')
 
     def add_comment(self, pid):
+        """This method adds comment for the post with given post id
+
+        Args:
+            pid: The post id
+        """
         if self.user:
             post = repo.PostEntity.by_id(int(pid))
             comment_content = self.request.get('comment')
@@ -318,18 +417,30 @@ class PostHandler(common_utilities.BaseHandler):
         self.redirect('/login')
 
     def edit_comment(self, cid, pid):
+        """This method edits comment with for the given post and given comment id
+
+        Args:
+            cid: The comment id
+            pid: The post id
+        """
         if self.user:
-            commentEntity = repo.CommentEntity.by_id(int(cid))
+            comment_object = repo.CommentEntity.by_id(int(cid))
             comment_content = self.request.get('post_comment')
-            if commentEntity and comment_content:
-                commentEntity.comment = comment_content
-                repo.CommentEntity.commit_comment(commentEntity)
+            if comment_object and comment_content:
+                comment_object.comment = comment_content
+                repo.CommentEntity.commit_comment(comment_object)
                 return self.redirect('/{0}/{1}'.format('post',
                                                        pid))
 
         self.redirect('/login')
 
     def delete_comment(self, cid, pid):
+        """This method deletes the comment for given post with given comment id
+
+        Args:
+            cid: The comment id
+            pid: The post id
+        """
         if self.user:
             comment = repo.CommentEntity.by_id(int(cid))
             if comment:
@@ -345,11 +456,17 @@ class UserInfoHandler(common_utilities.BaseHandler):
     """This class handles user information"""
 
     def welcome(self):
+        """This method gets the welcome page"""
         if self.user:
             return self.render('welcome.html')
         self.redirect('/register')
 
     def add_about(self, uid):
+        """This method adds about info for the logged in user
+
+        Args:
+            uid: The user id
+        """
         if self.user and uid == str(self.user.key().id()):
             about = self.request.get('about')
             if about:
@@ -358,13 +475,23 @@ class UserInfoHandler(common_utilities.BaseHandler):
 
         self.redirect('/')
 
-    def about_user(self, username, uid):
-        userA = repo.UserEntity.by_id(int(uid))
-        if userA:
-            user_posts = self.get_all_posts(userA.key().id())
+    def about_user(self, *args):
+        """This method gets the about page for a given user
+
+        Args:
+            args[0]: The username(unused, added for more readability of route)
+            args[1]: The user id
+        """
+        user_for_about = len(args) == 2 and repo.UserEntity.by_id(int(args[1]))
+        if user_for_about:
+            user_posts = UserInfoHandler.get_all_posts(
+                user_for_about.key().id())
             if not user_posts:
                 user_posts = []
-            self.render('user_info.html', userA=userA, user_posts=user_posts)
+            return self.render(
+                'user_info.html', userA=user_for_about, user_posts=user_posts)
+
+        self.redirect("/")
 
 
 class AboutHandler(common_utilities.BaseHandler):
@@ -372,4 +499,5 @@ class AboutHandler(common_utilities.BaseHandler):
     """This class serves responsive webpage"""
 
     def get(self):
+        """This method gets the about page"""
         self.render('about.html')

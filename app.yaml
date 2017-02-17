@@ -7,7 +7,7 @@ handlers:
   static_dir: static
 
 - url: /.*
-  script: multiuserblog.app
+  script: multiuserblog.BLOG
 
 libraries:
 - name: jinja2
