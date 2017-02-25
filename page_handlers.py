@@ -1,5 +1,6 @@
 """This module defines page handlers for multiuser blog"""
 
+import logging
 import re
 import common_utilities
 from common_utilities import SecurityProvider
@@ -13,6 +14,42 @@ __version__ = "1.0.0"
 __maintainer__ = "Ahmed Faraz Ansari"
 __email__ = "af.ahmfrz@gmail.com"
 __status__ = "Production"
+
+# region decorators
+def post_exists(function):
+    def wrapper(self, pid, *args):
+        post = repo.PostEntity.by_id(int(pid))
+        if post:
+            return function(self, post, *args)
+        else:
+            return self.error(404)
+    return wrapper
+
+def comment_exists(function):
+    def wrapper(self, pid, cid):
+        post = repo.PostEntity.by_id(int(pid))
+        comment = repo.CommentEntity.by_id(int(cid))
+        if post and comment:
+            return function(self, comment, pid)
+        else:
+            return self.error(404)
+    return wrapper
+
+def user_owns_post(function):
+    def wrapper(self, post):
+        if post.created_by == self.user.key().id():
+            return function(self, post)
+        else:
+            return self.error(404)
+    return wrapper
+
+def user_owns_comment(function):
+    def wrapper(self, comment_object, pid):
+        if comment_object.comment_by_id == self.user.key().id():
+            return function(self, comment_object, pid)
+        else:
+            return self.error(404)
+    return wrapper
 
 # region Page handlers
 
@@ -291,25 +328,27 @@ class PostHandler(common_utilities.BaseHandler):
     """This class handles blog post modifications"""
 
     # region Handler methods
-    def get(self, pid):
+    @post_exists
+    def get(self, post):
         """This method gets the post page of given post id for logged in users
 
         Args:
             pid: The post id
+            post: The post object
         """
         if not self.user:
             return self.redirect('/login')
 
-        post = repo.PostEntity.by_id(int(pid))
-        if post:
-            post_comments = post.get_all_comments()
-            if not post_comments:
-                post_comments = []
-            return self.render('post.html', post=post, post_comments=post_comments)
+        post_comments = post.get_all_comments()
+        if not post_comments:
+            post_comments = []
+        return self.render('post.html', post=post, post_comments=post_comments)
 
         self.redirect('/')
 
-    def edit_post(self, pid):
+    @post_exists
+    @user_owns_post
+    def edit_post(self, post):
         """This method edits the post with given post id for logged in users
 
         Args:
@@ -322,44 +361,41 @@ class PostHandler(common_utilities.BaseHandler):
         content = self.request.get('post_content')
 
         if title and content:
-            post = repo.PostEntity.by_id(int(pid))
             post.title = title
 
             # Format the content before saving
             post.content = content.replace('\n', '<br>')
             repo.PostEntity.commit_post(post)
 
-        self.redirect('/{0}/{1}'.format('post', pid))
+        self.redirect('/{0}/{1}'.format('post', post.key().id()))
 
-    def delete_post(self, pid):
+    @post_exists
+    @user_owns_post
+    def delete_post(self, post):
         """This method deletes the post with given post id for logged in users
 
         Args:
-            pid: The post id
+            post: The post
         """
         if not self.user:
             return self.redirect('/login')
 
-        post = repo.PostEntity.by_id(int(pid))
-        if post:
-            post.delete()
-            self.redirect('/')
-        else:
-            self.error(404)
+        post.delete()
+        self.redirect('/')
 
-    def like_post(self, pid):
-        """This method adds likes for the post with given post id
+    @post_exists
+    def like_post(self, post):
+        """This method adds likes for the given post
 
         Args:
-            pid: The post id
+            post: The post
         """
         if not self.user:
             return self.redirect('/login')
 
-        post = repo.PostEntity.by_id(int(pid))
-
         # Check if the user has already liked this post
-        if post and not self.user.check_likes(pid):
+        pid = post.key().id()
+        if not self.user.check_likes(pid):
             self.user.liked_posts = str(pid)
             post.likes += 1
             repo.UserEntity.commit_user(self.user)
@@ -369,7 +405,8 @@ class PostHandler(common_utilities.BaseHandler):
 
         self.redirect('/')
 
-    def unlike_post(self, pid):
+    @post_exists
+    def unlike_post(self, post):
         """This method reduces likes for the post with given post id
 
         Args:
@@ -378,10 +415,9 @@ class PostHandler(common_utilities.BaseHandler):
         if not self.user:
             return self.redirect('/login')
 
-        post = repo.PostEntity.by_id(int(pid))
-
         # Check if the user has already unliked this post
-        if post and self.user.check_likes(pid):
+        pid = post.key().id()
+        if self.user.check_likes(pid):
             self.user.liked_posts = ""
 
             # Likes should not be negative
@@ -396,16 +432,16 @@ class PostHandler(common_utilities.BaseHandler):
 
         self.redirect('/')
 
-    def add_comment(self, pid):
+    @post_exists
+    def add_comment(self, post):
         """This method adds comment for the post with given post id
 
         Args:
-            pid: The post id
+            post: The post
         """
         if self.user:
-            post = repo.PostEntity.by_id(int(pid))
             comment_content = self.request.get('comment')
-            if post and comment_content:
+            if comment_content:
                 comment = repo.CommentEntity.register(post=post,
                                                       comment_by=self.user.username,
                                                       comment_by_id=self.user.key().id(),
@@ -416,17 +452,18 @@ class PostHandler(common_utilities.BaseHandler):
 
         self.redirect('/login')
 
-    def edit_comment(self, cid, pid):
+    @comment_exists
+    @user_owns_comment
+    def edit_comment(self, comment_object, pid):
         """This method edits comment with for the given post and given comment id
 
         Args:
-            cid: The comment id
+            comment_object: The comment
             pid: The post id
         """
         if self.user:
-            comment_object = repo.CommentEntity.by_id(int(cid))
             comment_content = self.request.get('post_comment')
-            if comment_object and comment_content:
+            if comment_content:
                 comment_object.comment = comment_content
                 repo.CommentEntity.commit_comment(comment_object)
                 return self.redirect('/{0}/{1}'.format('post',
@@ -434,19 +471,19 @@ class PostHandler(common_utilities.BaseHandler):
 
         self.redirect('/login')
 
-    def delete_comment(self, cid, pid):
+    @comment_exists
+    @user_owns_comment
+    def delete_comment(self, comment_object, pid):
         """This method deletes the comment for given post with given comment id
 
         Args:
-            cid: The comment id
+            comment_object: The comment
             pid: The post id
         """
         if self.user:
-            comment = repo.CommentEntity.by_id(int(cid))
-            if comment:
-                comment.delete()
-                return self.redirect('/{0}/{1}'.format('post',
-                                                       pid))
+            comment_object.delete()
+            return self.redirect('/{0}/{1}'.format('post',
+                                                   pid))
 
         self.redirect('/login')
 

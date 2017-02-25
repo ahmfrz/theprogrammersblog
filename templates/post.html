@@ -67,7 +67,7 @@
                     <strong>{{p.comment_by}}</strong>&nbsp;<small>{{p.created_date.strftime("%b %d, %Y")}}</small>:
                 </div>
                 {% if p.comment_by_id == user.key().id() %}
-                <form class="inline-form" method="post" action={{ "/{0}/{1}/{2}".format( "deleteComment", p.key().id(), post.key().id())}}>
+                <form class="inline-form" method="post" action={{ "/{0}/{1}/{2}".format( "deleteComment", post.key().id(), p.key().id())}}>
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#commentModal">
                         Edit
@@ -75,7 +75,7 @@
                     <input type="submit" value="Delete" class="btn btn-default">
                 </form>
                 <!-- Modal -->
-                <form method="post" action={{ "/{0}/{1}/{2}".format( "editComment", p.key().id(), post.key().id())}}>
+                <form method="post" action={{ "/{0}/{1}/{2}".format( "editComment", post.key().id(), p.key().id())}}>
                     <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
