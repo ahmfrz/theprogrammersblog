@@ -5,7 +5,6 @@ handlers"""
 
 import webapp2
 import handlers
-import page_handlers
 
 __author__ = "Ahmed Faraz Ansari"
 __copyright__ = "Copyright 2017 (c) ahmfrz"
