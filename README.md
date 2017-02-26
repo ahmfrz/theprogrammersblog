@@ -39,7 +39,7 @@ Find any bugs? Have another feature you think should be included? Contributions 
 
 First, fork this repository.
 
-![Fork Icon](theprogrammersblog/fork-icon.png)
+![Fork Icon](fork-icon.png)
 
 Next, clone this repository to your desktop to make changes.
 
@@ -50,7 +50,7 @@ $ cd folder
 
 Once you've pushed changes to your local repository, you can issue a pull request by clicking on the green pull request icon.
 
-![Pull Request Icon](theprogrammersblog/pull-request-icon.png)
+![Pull Request Icon](pull-request-icon.png)
 
 ## License
 
