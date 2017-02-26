@@ -1,22 +1,17 @@
 # The Programmers Blog
  
 ### What is it?
- It's a multiuser blog where programmers can share their stories. Url: http://theprogrammersblog.appspot.com/
+ Multiuser blog where programmers can share their stories. Url: http://theprogrammersblog.appspot.com/
  
 ### Features
- * Backend is built with python and google app engine
- * Frontend is built with Bootstrap
- * Passwords are hashed before storage
- * Cookie hashing for user security
- * Pagination(5 posts on one page)
- * Users can comment, like/ unlike eachothers posts
- * Users can see all posts by a user and contact them with provided email address
- * Users can edit/ delete their posts
- * Allows raw html to be added in content just for fun
+ * Uses google app engine
+ * Secure
+ * Uses cookies
+ * Paginated(5 posts on one page)
  * About page is a responsive portfolio page of the author, source code is available at - https://github.com/ahmfrz/Portfolio-Site/
  
 ### Installation steps
- For awesome people who would like to debug the application at their end, following are the steps:
+ Please follow the steps below:
  
  #### Pre-requisites:
  * Python 2.7 - https://www.python.org/downloads/
@@ -24,15 +19,39 @@
  * Google cloud SDK - https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe
  
  #### Steps
- 1. Download/ Fork all files and folders from theprogrammersblog in a folder
- 2. Open command prompt and navigate to the source code folder
+ 1. Download/ Fork(Find steps for forking in 'How to Contribute' section)
+ 2. Open command prompt and navigate to the source folder
  OR Press and hold shift and right click in the empty area and select 'Open command window here' from the menu
  3. Enter the following command:
  'dev_appserver.py .'
  4. Enter Chrome(Or any other browser) and navigate to 'http://localhost:8080/'
- 5. Now you can make changes and enjoy the app as much as you like
+ 5. Verify that theprogrammersblog webpage is displayed
  
-### Known Issues
- * 1000 posts can be accessed from the homepage
- * New post page has an upcoming feature box
- * Little white indicator which shows where you are on the site is fixed at 'Home' nav
+ ## Resources
+
+* [Bootstrap documentation](http://getbootstrap.com/) - Helpful documentation.
+* [Github flavored markdown reference](https://help.github.com/categories/writing-on-github/) - Github own documentation about documentation
+* [Writing ReadMes](https://github.com/udacity/ud777-writing-readmes/edit/master/README.md) - Nice guide for building read mes
+
+## How to Contribute
+
+Find any bugs? Have another feature you think should be included? Contributions are welcome!
+
+First, fork this repository.
+
+![Fork Icon](theprogrammersblog/fork-icon.png)
+
+Next, clone this repository to your desktop to make changes.
+
+```sh
+$ git clone {YOUR_REPOSITORY_CLONE_URL}
+$ cd folder
+```
+
+Once you've pushed changes to your local repository, you can issue a pull request by clicking on the green pull request icon.
+
+![Pull Request Icon](theprogrammersblog/pull-request-icon.png)
+
+## License
+
+The contents of this repository are covered under the [MIT License](LICENSE).
