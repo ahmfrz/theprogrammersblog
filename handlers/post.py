@@ -78,12 +78,10 @@ class PostHandler(BaseHandler):
         # Check if the user has already liked this post
         pid = post.key().id()
         if not self.user.check_likes(pid):
-            self.user.liked_posts = str(pid)
+            self.user.liked_posts.append(pid)
             UserEntity.commit_user(self.user)
-            PostEntity.commit_post(post)
         elif post:
             return self.redirect('/{0}'.format(pid))
-
         self.redirect('/')
 
     @decorators.post_exists
@@ -99,15 +97,8 @@ class PostHandler(BaseHandler):
         # Check if the user has already unliked this post
         pid = post.key().id()
         if self.user.check_likes(pid):
-            self.user.liked_posts = ""
-
-            # Likes should not be negative
-            if post.likes > 0:
-                post.likes -= 1
-            else:
-                post.likes = 0
+            self.user.liked_posts.remove(pid)
             UserEntity.commit_user(self.user)
-            PostEntity.commit_post(post)
         elif post:
             return self.redirect('/{0}'.format(pid))
 

@@ -14,7 +14,7 @@ class UserEntity(db.Model):
     password = db.StringProperty(required=True)
     email = db.StringProperty()
     about = db.TextProperty()
-    liked_posts = db.StringProperty()
+    liked_posts = db.ListProperty(int)
 
     # region class functions
     @classmethod
@@ -76,6 +76,6 @@ class UserEntity(db.Model):
 
         Returns:
             Success: True
-            Failure: None
+            Failure: False
         """
-        return self.all().filter('liked_posts = ', pid).get()
+        return pid in self.liked_posts

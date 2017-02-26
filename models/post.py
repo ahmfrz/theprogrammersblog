@@ -17,6 +17,11 @@ class PostEntity(db.Model):
     created_date = db.DateTimeProperty(auto_now_add=True, indexed=True)
     modified_date = db.DateTimeProperty(auto_now=True)
 
+    #region properties
+    @property
+    def likes(self):
+        return UserEntity.gql("WHERE liked_posts = :1", self.key().id()).count()
+
     # region class methods
     @classmethod
     def by_id(cls, pid):

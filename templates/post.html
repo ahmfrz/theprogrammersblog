@@ -43,11 +43,11 @@
             <p>
                 {% if post.user.key().id() != user.key().id() %}
                 <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "likepost", post.key().id())}}>
-                    <label class="like-counter">@@@ TODO</label>
+                    <label class="like-counter">{{post.likes}}</label>
                     <input class="btn btn-default" type="submit" value="Like">
                 </form>
                 {% else %}
-                <label class="like-counter">@@@ TODO</label>&nbsp;<b>Likes</b> {% endif %}
+                <label class="like-counter">{{post.likes}}</label>&nbsp;<b>Likes</b> {% endif %}
             </p>
         </div>
         <div>
