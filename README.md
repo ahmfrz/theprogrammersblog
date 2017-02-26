@@ -1,24 +1,24 @@
 # The Programmers Blog
  
-### What is it?
+## What is it?
  Multiuser blog where programmers can share their stories. Url: http://theprogrammersblog.appspot.com/
  
-### Features
+## Features
  * Uses google app engine
  * Secure
  * Uses cookies
  * Paginated(5 posts on one page)
  * About page is a responsive portfolio page of the author, source code is available at - https://github.com/ahmfrz/Portfolio-Site/
  
-### Installation steps
+## Installation steps
  Please follow the steps below:
  
- #### Pre-requisites:
+### Pre-requisites:
  * Python 2.7 - https://www.python.org/downloads/
  * Any text editor for editing the code(Sublime text preferred - https://www.sublimetext.com/download)
  * Google cloud SDK - https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe
  
- #### Steps
+### Steps
  1. Download/ Fork(Find steps for forking in 'How to Contribute' section)
  2. Open command prompt and navigate to the source folder
  OR Press and hold shift and right click in the empty area and select 'Open command window here' from the menu
@@ -27,7 +27,7 @@
  4. Enter Chrome(Or any other browser) and navigate to 'http://localhost:8080/'
  5. Verify that theprogrammersblog webpage is displayed
  
- ## Resources
+## Resources
 
 * [Bootstrap documentation](http://getbootstrap.com/) - Helpful documentation.
 * [Github flavored markdown reference](https://help.github.com/categories/writing-on-github/) - Github own documentation about documentation
