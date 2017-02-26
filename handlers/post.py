@@ -1,8 +1,10 @@
+"""Defines PostHandler"""
+
 from models.user import UserEntity
 from models.post import PostEntity
 from models.comment import CommentEntity
 from infrastructure import decorators
-from base import BaseHandler
+from handlers.base import BaseHandler
 
 
 class PostHandler(BaseHandler):
@@ -25,8 +27,6 @@ class PostHandler(BaseHandler):
         if not post_comments:
             post_comments = []
         return self.render('post.html', post=post, post_comments=post_comments)
-
-        self.redirect('/')
 
     @decorators.post_exists
     @decorators.user_owns_post
@@ -115,8 +115,8 @@ class PostHandler(BaseHandler):
             comment_content = self.request.get('comment')
             if comment_content:
                 comment = CommentEntity.register(user=self.user,
-                                                post=post,
-                                                comment=comment_content)
+                                                 post=post,
+                                                 comment=comment_content)
                 CommentEntity.commit_comment(comment)
                 return self.redirect('/{0}/{1}'.format('post',
                                                        post.key().id()))

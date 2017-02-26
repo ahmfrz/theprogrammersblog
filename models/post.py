@@ -1,9 +1,13 @@
+"""Defines PostEntity"""
+
 from google.appengine.ext import db
-from user import UserEntity
+from models.user import UserEntity
+
 
 def post_key(group='default'):
     """This function returns db key for posts"""
     return db.Key.from_path('posts', group)
+
 
 class PostEntity(db.Model):
 
@@ -13,13 +17,14 @@ class PostEntity(db.Model):
     # region columns
     title = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    user = db.ReferenceProperty(UserEntity, collection_name = 'posts')
+    user = db.ReferenceProperty(UserEntity, collection_name='posts')
     created_date = db.DateTimeProperty(auto_now_add=True, indexed=True)
     modified_date = db.DateTimeProperty(auto_now=True)
 
-    #region properties
+    # region properties
     @property
     def likes(self):
+        """Returns the number likes for given post"""
         return UserEntity.gql("WHERE liked_posts = :1", self.key().id()).count()
 
     # region class methods
@@ -51,7 +56,7 @@ class PostEntity(db.Model):
         return cls(parent=post_key(),
                    title=title,
                    content=content,
-                   user = user)
+                   user=user)
 
     @classmethod
     def execute_query(cls, query):

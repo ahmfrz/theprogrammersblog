@@ -1,4 +1,7 @@
-from base import BaseHandler
+"""Defines LogoutHandler"""
+
+from handlers.base import BaseHandler
+
 
 class LogoutHandler(BaseHandler):
 

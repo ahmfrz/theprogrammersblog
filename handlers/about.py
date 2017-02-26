@@ -1,4 +1,7 @@
-from base import BaseHandler
+"""Defines AboutHandler"""
+
+from handlers.base import BaseHandler
+
 
 class AboutHandler(BaseHandler):
 

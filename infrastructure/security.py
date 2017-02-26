@@ -1,8 +1,11 @@
+"""Defines Security related functionalities"""
+
 from string import letters
 import random
 import hashlib
 
 SECRET = "lwkDwe234sdfnA@fdsd..aw"
+
 
 class SecurityProvider(object):
 

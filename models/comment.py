@@ -1,10 +1,14 @@
-from post import PostEntity
-from user import UserEntity
+"""Defines CommentEntity"""
+
+from models.post import PostEntity
+from models.user import UserEntity
 from google.appengine.ext import db
+
 
 def comment_key(group='default'):
     """This function returns db key for comments"""
     return db.Key.from_path('comments', group)
+
 
 class CommentEntity(db.Model):
 

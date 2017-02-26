@@ -1,7 +1,9 @@
-import post
+"""Defines LoginHandler"""
+
 from models.user import UserEntity
 from infrastructure.security import SecurityProvider
-from base import BaseHandler
+from handlers.base import BaseHandler
+
 
 class LoginHandler(BaseHandler):
 

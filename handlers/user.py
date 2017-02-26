@@ -1,5 +1,8 @@
+"""Defines UserInfoHandler"""
+
 from models.user import UserEntity
-from base import BaseHandler
+from handlers.base import BaseHandler
+
 
 class UserInfoHandler(BaseHandler):
 

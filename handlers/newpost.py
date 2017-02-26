@@ -1,5 +1,8 @@
+"""Defines NewPostHandler"""
+
 from models.post import PostEntity
-from base import BaseHandler
+from handlers.base import BaseHandler
+
 
 class NewPostHandler(BaseHandler):
 
@@ -27,8 +30,8 @@ class NewPostHandler(BaseHandler):
             # Format the content for display
             format_content = content.replace('\n', '<br>')
             post = PostEntity.create_post(title=title,
-                                               content=format_content,
-                                               user=self.user)
+                                          content=format_content,
+                                          user=self.user)
             PostEntity.commit_post(post)
             self.redirect('/post/{0}'.format(post.key().id()))
         else:

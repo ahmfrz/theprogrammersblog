@@ -1,3 +1,5 @@
+"""Defines BaseHandler"""
+
 import os
 import jinja2
 import webapp2
@@ -7,9 +9,11 @@ from infrastructure import gql_queries
 from infrastructure.security import SecurityProvider
 
 # region global variables
-TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')
+TEMPLATE_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), 'templates')
 JINJA_ENV = jinja2.Environment(loader=jinja2.FileSystemLoader(TEMPLATE_DIR),
                                autoescape=True)
+
 
 class BaseHandler(webapp2.RequestHandler):
 

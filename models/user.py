@@ -1,3 +1,5 @@
+"""Defines UserEntity"""
+
 from google.appengine.ext import db
 
 def users_key(group='default'):

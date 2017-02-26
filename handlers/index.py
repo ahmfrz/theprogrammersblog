@@ -1,7 +1,9 @@
-from base import BaseHandler
+"""Defines IndexHandler"""
+
+from handlers.base import BaseHandler
 from infrastructure import gql_queries
 from models.post import PostEntity
-from models.user import UserEntity
+
 
 class IndexHandler(BaseHandler):
 

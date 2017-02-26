@@ -1,6 +1,8 @@
-import decorators
-import gql_queries
-import security
+"""Defines common functionalities"""
+
+import infrastructure.decorators
+import infrastructure.gql_queries
+import infrastructure.security
 
 __author__ = "Ahmed Faraz Ansari"
 __copyright__ = "Copyright 2017 (c) ahmfrz"
