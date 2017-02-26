@@ -4,9 +4,9 @@
         <div class="blog-post">
             <h2 class="page-header">{{post.title}}</h2>
             <p class="blog-post-meta">{{post.created_date.strftime("%b %d, %Y %H:%M:%S")}} by
-                <a href={{ "/{0}/{1}".format(post.author, post.created_by)}}>{{post.author}}</a>
+                <a href={{ "/{0}/{1}".format(post.user.username, post.user.key().id())}}>{{post.user.username}}</a>
             </p>
-            {% if post.author == user.username %}
+            {% if post.user.key().id() == user.key().id() %}
             <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "deletepost", post.key().id())}}>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
@@ -41,13 +41,13 @@
             </div>
             <br>
             <p>
-                {% if post.author != user.username %}
+                {% if post.user.key().id() != user.key().id() %}
                 <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "likepost", post.key().id())}}>
-                    <label class="like-counter">{{post.likes}}</label>
+                    <label class="like-counter">@@@ TODO</label>
                     <input class="btn btn-default" type="submit" value="Like">
                 </form>
                 {% else %}
-                <label class="like-counter">{{post.likes}}</label>&nbsp;<b>Likes</b> {% endif %}
+                <label class="like-counter">@@@ TODO</label>&nbsp;<b>Likes</b> {% endif %}
             </p>
         </div>
         <div>
@@ -64,9 +64,9 @@
             {% for p in post_comments %}
             <div class="comment-container">
                 <div>
-                    <strong>{{p.comment_by}}</strong>&nbsp;<small>{{p.created_date.strftime("%b %d, %Y")}}</small>:
+                    <strong>{{p.user.username}}</strong>&nbsp;<small>{{p.created_date.strftime("%b %d, %Y")}}</small>:
                 </div>
-                {% if p.comment_by_id == user.key().id() %}
+                {% if p.user.key().id() == user.key().id() %}
                 <form class="inline-form" method="post" action={{ "/{0}/{1}/{2}".format( "deleteComment", post.key().id(), p.key().id())}}>
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#commentModal">

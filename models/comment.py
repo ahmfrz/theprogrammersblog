@@ -1,4 +1,5 @@
 from post import PostEntity
+from user import UserEntity
 from google.appengine.ext import db
 
 def comment_key(group='default'):
@@ -11,15 +12,14 @@ class CommentEntity(db.Model):
     retrieval of comments"""
 
     # region columns
-    comment_by = db.StringProperty()
-    comment_by_id = db.IntegerProperty()
     created_date = db.DateTimeProperty(auto_now_add=True)
     comment = db.TextProperty(required=True)
+    user = db.ReferenceProperty(UserEntity, collection_name='user')
     post = db.ReferenceProperty(PostEntity, collection_name='post_comments')
 
     # region class functions
     @classmethod
-    def register(cls, post, comment_by, comment_by_id, comment):
+    def register(cls, user, post, comment):
         """This function register a comment with given values
 
         Args:
@@ -32,9 +32,8 @@ class CommentEntity(db.Model):
             New CommentEntity instance
         """
         return cls(parent=comment_key(),
+                   user=user,
                    post=post,
-                   comment_by=comment_by,
-                   comment_by_id=comment_by_id,
                    comment=comment)
 
     @classmethod

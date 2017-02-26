@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+from user import UserEntity
 
 def post_key(group='default'):
     """This function returns db key for posts"""
@@ -12,11 +13,9 @@ class PostEntity(db.Model):
     # region columns
     title = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    author = db.StringProperty(required=True)
-    created_by = db.IntegerProperty(required=True, indexed=True)
+    user = db.ReferenceProperty(UserEntity, collection_name = 'posts')
     created_date = db.DateTimeProperty(auto_now_add=True, indexed=True)
     modified_date = db.DateTimeProperty(auto_now=True)
-    likes = db.IntegerProperty()
 
     # region class methods
     @classmethod
@@ -32,7 +31,7 @@ class PostEntity(db.Model):
         return cls.get_by_id(pid, parent=post_key())
 
     @classmethod
-    def create_post(cls, title, content, author, created_by):
+    def create_post(cls, title, content, user):
         """This function creates post with given values
 
         Args:
@@ -47,9 +46,7 @@ class PostEntity(db.Model):
         return cls(parent=post_key(),
                    title=title,
                    content=content,
-                   author=author,
-                   created_by=created_by,
-                   likes=0)
+                   user = user)
 
     @classmethod
     def execute_query(cls, query):

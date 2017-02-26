@@ -24,7 +24,7 @@ def comment_exists(function):
 
 def user_owns_post(function):
     def wrapper(self, post):
-        if post.created_by == self.user.key().id():
+        if post.user.key().id() == self.user.key().id():
             return function(self, post)
         else:
             return self.error(404)
@@ -32,7 +32,7 @@ def user_owns_post(function):
 
 def user_owns_comment(function):
     def wrapper(self, comment_object, pid):
-        if comment_object.comment_by_id == self.user.key().id():
+        if comment_object.user.key().id() == self.user.key().id():
             return function(self, comment_object, pid)
         else:
             return self.error(404)

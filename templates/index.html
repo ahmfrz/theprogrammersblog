@@ -13,9 +13,9 @@
                     <a href={{"/{0}/{1}".format("post", posts[postIndex].key().id())}}>{{posts[postIndex].title}}</a>
                 </h2>
             <p class="blog-post-meta">{{posts[postIndex].modified_date.strftime("%b %d, %Y %H:%M:%S")}} by
-                <a href={{ "/{0}/{1}".format(posts[postIndex].author, posts[postIndex].created_by)}}>{{posts[postIndex].author}}</a>
+                <a href={{ "/{0}/{1}".format(posts[postIndex].user.username, posts[postIndex].user.key().id())}}>{{posts[postIndex].user.username}}</a>
             </p>
-            {% if posts[postIndex].author == user.username %}
+            {% if posts[postIndex].user.key().id() == user.key().id() %}
             <form class="inline-form" method="post" action={{ "/{0}/{1}".format( "deletepost", posts[postIndex].key().id())}}>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
@@ -50,16 +50,16 @@
             </div>
             <br>
             <p>
-                {% if posts[postIndex].author != user.username %}
+                {% if posts[postIndex].user.key().id() != user.key().id() %}
                 <form method="post" action={{ "/{0}/{1}".format( "likepost", posts[postIndex].key().id())}}>
-                    <label class="like-counter">{{posts[postIndex].likes}}</label>
+                    <label class="like-counter">@@@ TODO</label>
                     <button type="submit" formaction={{ "/{0}/{1}".format( "likepost", posts[postIndex].key().id())}} formmethod="post" class="btn btn-default">Like</button>
                     <button type="submit" formaction={{ "/{0}/{1}".format( "unlikepost", posts[postIndex].key().id())}} formmethod="post" class="btn btn-default">Unlike</button>
                 </form>
                 {% if posts[postIndex].key().id() == post_id %}
                 <div class="error">{{likes_error}}</div>
                 {% endif %} {% else %}
-                <label class="like-counter">{{posts[postIndex].likes}}</label>&nbsp;<b>Likes</b> {% endif %}
+                <label class="like-counter">@@@ TODO</label>&nbsp;<b>Likes</b> {% endif %}
             </p>
         </div>
         {% endfor %}
@@ -105,7 +105,7 @@
         <div class="sidebar-module">
             <h4>All posts</h4>
             <ol class="list-unstyled">
-                {% for p in user_posts %}
+                {% for p in user.posts %}
                 <li><a href={{ "/{0}/{1}".format( 'post', p.key().id())}}>{{p.title}}</a></li>
                 {% endfor %}
             </ol>

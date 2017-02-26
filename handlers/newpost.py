@@ -28,8 +28,7 @@ class NewPostHandler(BaseHandler):
             format_content = content.replace('\n', '<br>')
             post = PostEntity.create_post(title=title,
                                                content=format_content,
-                                               author=self.user.username,
-                                               created_by=self.user.key().id())
+                                               user=self.user)
             PostEntity.commit_post(post)
             self.redirect('/post/{0}'.format(post.key().id()))
         else:

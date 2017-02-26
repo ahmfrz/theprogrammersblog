@@ -79,7 +79,6 @@ class PostHandler(BaseHandler):
         pid = post.key().id()
         if not self.user.check_likes(pid):
             self.user.liked_posts = str(pid)
-            post.likes += 1
             UserEntity.commit_user(self.user)
             PostEntity.commit_post(post)
         elif post:
@@ -124,10 +123,9 @@ class PostHandler(BaseHandler):
         if self.user:
             comment_content = self.request.get('comment')
             if comment_content:
-                comment = CommentEntity.register(post=post,
-                                                      comment_by=self.user.username,
-                                                      comment_by_id=self.user.key().id(),
-                                                      comment=comment_content)
+                comment = CommentEntity.register(user=self.user,
+                                                post=post,
+                                                comment=comment_content)
                 CommentEntity.commit_comment(comment)
                 return self.redirect('/{0}/{1}'.format('post',
                                                        post.key().id()))

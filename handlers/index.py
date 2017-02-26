@@ -21,12 +21,6 @@ class IndexHandler(BaseHandler):
         # Get all posts
         all_posts = PostEntity.execute_query(gql_queries.SELECT_ALL_POSTS)
 
-        # Get all posts by logged in user
-        user_posts = self.user and all_posts and IndexHandler.get_all_posts(
-            self.user.key().id())
-        if not user_posts:
-            user_posts = []
-
         # Make pages
         if all_posts:
             result = self.make_pages(all_posts)
@@ -44,7 +38,6 @@ class IndexHandler(BaseHandler):
                     posts=result[0],
                     posts_len=result[1],
                     pages=result[2],
-                    user_posts=user_posts,
                     post_id=int(pid),
                     likes_error=error)
 

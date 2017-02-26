@@ -9,7 +9,7 @@
     <div class="col-sm-6">
         <h3>All posts</h3>
         <ol class="list-unstyled">
-            {% for p in user_posts %}
+            {% for p in user.posts %}
             <h4><li><a href={{ "/{0}/{1}".format( 'post', p.key().id())}}>{{p.title}}</a></li></h4> {% endfor %}
         </ol>
     </div>
